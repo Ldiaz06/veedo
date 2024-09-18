@@ -37,6 +37,19 @@ export default async function handler(req, res) {
             console.error('Error al obtener usuarios:', error);
             res.status(500).json({ mensaje: 'Error en el servidor' });
         }
+    } else if (req.method === 'PUT') {
+        const { id, plantillaId } = req.body;
+
+        try {
+            const result = await db.query(
+                'UPDATE usuarios SET plantilla_id = $1 WHERE id = $2 RETURNING *',
+                [plantillaId, id]
+            );
+            res.status(200).json({ mensaje: 'Plantilla actualizada', usuario: result.rows[0] });
+        } catch (error) {
+            console.error('Error al actualizar plantilla:', error);
+            res.status(500).json({ mensaje: 'Error en el servidor' });
+        }
     } else {
         res.status(405).json({ mensaje: 'M�todo no permitido' });
     }
